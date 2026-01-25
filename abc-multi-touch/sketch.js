@@ -111,7 +111,7 @@ circle(balls[3].pos.x, balls[3].pos.y, 55);//lower lip
 
   for (let b of balls){
     //b.drag();
-    b.reappear();
+    //b.reappear();
     b.update();
     b.display();
   }
@@ -313,8 +313,9 @@ class Ball {
     this.vel.add(this.acc);
     this.pos.add(this.vel);
     this.acc.mult(0);
-
     this.vel.mult(this.damping);
+    this.pos.x = constrain(this.pos.x, 0, width);
+    this.pos.y = constrain(this.pos.y, 0, height);
   }
   applyForce(f) {
     if (this.mass > 0) {
@@ -322,18 +323,18 @@ class Ball {
       this.acc.add(force);
     }
   }
-  reappear() {
-    if (this.pos.x < 0) {
-      this.pos.x = width;
-    } else if (this.pos.x > width) {
-      this.pos.x = 0;
-    }
-    if (this.pos.y < 0) {
-      this.pos.y = height;
-    } else if (this.pos.y > height) {
-      this.pos.y = 0;
-    }
-  }
+  // reappear() {
+  //   if (this.pos.x < 0) {
+  //     this.pos.x = width;
+  //   } else if (this.pos.x > width) {
+  //     this.pos.x = 0;
+  //   }
+  //   if (this.pos.y < 0) {
+  //     this.pos.y = height;
+  //   } else if (this.pos.y > height) {
+  //     this.pos.y = 0;
+  //   }
+  // }
   // drag() {
   //   if (mouseIsPressed) {
   //     let distance = dist(this.pos.x, this.pos.y, mouseX, mouseY);
