@@ -107,7 +107,7 @@ function draw() {
 
   for (let b of balls) {
     //b.drag();
-    b.reappear();
+    //b.reappear();
     b.update();
     b.display();
   }
