@@ -114,14 +114,14 @@ function drawEdgeRect(zone) {
 
   let H = height / 4;
   for (let i = 0; i < 4; i++) {
-    if (zone === "L" + i) fill(64, 316, 169);
+    if (zone === "L" + i) fill(64, 255, 169);
     else fill(0, 43, 53);
 
     rect(0, i * H, thickness, H);
   }
 
   for (let i = 0; i < 4; i++) {
-    if (zone === "R" + i) fill(64, 316, 169);
+    if (zone === "R" + i) fill(64, 255, 169);
     else fill(0, 43, 53);
 
     rect(width - thickness, i * H, thickness, H);
@@ -129,7 +129,7 @@ function drawEdgeRect(zone) {
 
   let W = width / 3;
   for (let i = 0; i < 3; i++) {
-    if (zone === "T" + i) fill(64, 316, 169);
+    if (zone === "T" + i) fill(64, 255, 169);
     else fill(0, 43, 53);
 
     rect(i * W, 0, W, thickness);
