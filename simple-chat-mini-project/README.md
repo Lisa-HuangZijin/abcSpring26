@@ -30,6 +30,7 @@
     turn your phone upsiade down
 
 <img src="image/tilt3.png" width="300">
+    
     message sent!
 
     you can also place request, and wait for someone to help!
