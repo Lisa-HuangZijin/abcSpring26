@@ -50,7 +50,6 @@ io.on("connection", function (socket) {
             " takes " +
             order.sender +
             " 's order ( " +
-            data.requestId +
             ")",
         );
 
