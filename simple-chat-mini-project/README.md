@@ -22,6 +22,13 @@
     5. node server.js
     6. in your browser https://your IP address + "." + "3000"
 
-![demo tilt your phone](image/tilt1.png)
+type something you want
+<img src="image/tilt1.png" width="300">
+<img src="image/tilt2.png" width="300">
 
-<img src="image/tilt1.png" width="600">
+turn your phone upsiade down
+<img src="image/tilt3.png" width="300">
+message sent!
+
+you can also place request, and wait for someone to help!
+<img src="image/screenshot.PNG" width="300">
