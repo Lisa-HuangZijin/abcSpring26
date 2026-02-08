@@ -37,3 +37,4 @@
     others can choose to take this and help!
 
 <img src="image/screenshoot1.PNG" width="300">
+<img src="image/screenshoot2.png" width="300">
