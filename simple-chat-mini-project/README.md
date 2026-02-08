@@ -34,5 +34,6 @@
     message sent!
 
     you can also place request, and wait for someone to help!
+    others can choose to take this and help!
 
 <img src="image/screenshoot1.PNG" width="300">
