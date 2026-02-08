@@ -34,4 +34,4 @@
 
     you can also place request, and wait for someone to help!
 
-<img src="image/screenshot1.PNG" width="300">
+<img src="image/screenshoot1.PNG" width="300">
