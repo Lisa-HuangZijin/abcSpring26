@@ -49,10 +49,10 @@ function handleOrientation(event) {
 
 ////////////////request//////////////////
 postBtn.addEventListener("click", function () {
-  const orderId = "request" + Date.now();
+  //const orderId = "request" + Date.now();
   socket.emit("messageFromClient", {
     type: "ORDER_POST",
-    id: orderId,
+    //id: orderId,
     sender: nameInput.value || "anonymous",
     message: msgInput.value || "Mission Unlocked!",
     status: "open",

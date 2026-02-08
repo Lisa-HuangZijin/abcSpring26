@@ -55,7 +55,7 @@ io.on("connection", function (socket) {
 
         io.emit("messageFromServer", {
           type: "request_update",
-          id: data.requestId,
+          //id: data.requestId,
           status: "claimed",
           claimedBy: data.claimer,
         });
