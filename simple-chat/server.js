@@ -28,6 +28,22 @@ const io = new Server(HTTPSserver);
 
 io.on("connection", (socket) => {
   console.log("a user connected");
+
+  socket.on("messageFromClient", function (incomingMessage) {
+    console.log(incomingMessage); //只看这个lable的data
+
+    let msgForAllClients = {
+      sender: "unknown",
+      message: incomingMessage,
+    };
+
+    io.emit("messageFromServer", msgForAllClients);
+  });
+
+  socket.on("disconnect", () => {
+    //listen for everyone to connect
+    console.log("user disconnected"); //所以disconnect前提是connect//然后是listen to the exact client to disconnect
+  }); //像是io大盒子里的小盒子
 });
 
 HTTPSserver.listen(portHTTPS, function (req, res) {
