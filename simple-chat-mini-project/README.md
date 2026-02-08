@@ -21,3 +21,9 @@
     4. npm install
     5. node server.js
     6. in your browser https://your IP address + "." + "3000"
+
+    ![demo tilt your phone](image/tilt1.png)
+
+![relative](public/images/demo.png)
+
+<img src="image/tilt1.png" width="600">
