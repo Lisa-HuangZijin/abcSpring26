@@ -1,4 +1,13 @@
-let socket = io();
+// let socket = io();
+// socket connection that works locally and on the server:
+if (
+  location.hostname.toLowerCase().startsWith("browsercircus") ||
+  location.hostname.toLowerCase().startsWith("www")
+) {
+  socket = io({ path: "/leon/port-4100/socket.io" }); // e.g. '/leon/port-4100/socket.io' or '/socket.io'
+} else {
+  socket = io();
+}
 const requestMap = new Map();
 
 let chatForm = document.querySelector("#chatForm");
