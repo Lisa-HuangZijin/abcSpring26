@@ -31,7 +31,14 @@ function setup() {
 
   Runner.run(engine);
 
-  socket = io();
+  if (
+    location.hostname.toLowerCase().startsWith("browsercircus") ||
+    location.hostname.toLowerCase().startsWith("www")
+  ) {
+    socket = io({ path: "/lisa/port-4250/socket.io" }); // e.g. '/leon/port-4100/socket.io' or '/socket.io'
+  } else {
+    socket = io();
+  }
   socket.emit("my-role", { role: "phone" });
   socket.emit("update-phone-width", { width: width });
 

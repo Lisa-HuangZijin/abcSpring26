@@ -6,7 +6,15 @@ function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
   canvas.parent("p5-canvas-container");
 
-  socket = io();
+  if (
+    location.hostname.toLowerCase().startsWith("browsercircus") ||
+    location.hostname.toLowerCase().startsWith("www")
+  ) {
+    socket = io({ path: "/lisa/port-4250/socket.io" }); // e.g. '/leon/port-4100/socket.io' or '/socket.io'
+  } else {
+    socket = io();
+  }
+
   //注册角色为 user
   socket.on("connect", () => {
     console.log("User connect，ID:", socket.id);
