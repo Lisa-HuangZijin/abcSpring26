@@ -4,6 +4,13 @@ let ripples = [];
 let rippleCounter = 0;
 
 let activePhoneWidth = 400;
+let reflection;
+let dropSound;
+
+function preload() {
+  reflection = loadImage("reflection.png");
+  dropSound = loadSound("water1.mp3");
+}
 
 function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
@@ -28,6 +35,10 @@ function setup() {
   //平板接收手机传输过来的文字和具体掉落位置
   socket.on("new-letter", (data) => {
     console.log("letter-recieved:", data.text);
+
+    if (dropSound && dropSound.isLoaded()) {
+      dropSound.play();
+    }
 
     if (data.currentPhoneWidth) {
       activePhoneWidth = data.currentPhoneWidth;
@@ -59,6 +70,12 @@ function draw() {
   //   // p.update(ripples);
   //   // p.display();
   // }
+  push();
+  translate(width / 2 - 22, height / 2 - 10);
+  scale(0.3);
+  tint(255, 120 - wordEntities.length);
+  image(reflection, 0, 0);
+  pop();
 
   for (let i = ripples.length - 1; i >= 0; i--) {
     ripples[i].update();
@@ -73,11 +90,24 @@ function draw() {
     f.display();
   }
 
-  //可以看到检查
+  //可以看到检查;
   // push();
-  // stroke(255, 50);
+  // stroke(255);
+  // //strokeWeight(2);
   // let debugX = (width - activePhoneWidth) / 2;
   // line(debugX, 0, debugX, height);
   // line(debugX + activePhoneWidth, 0, debugX + activePhoneWidth, height);
   // pop();
+}
+
+function touchStarted() {
+  // 检查音频上下文是否被挂起
+  if (getAudioContext().state !== "running") {
+    getAudioContext()
+      .resume()
+      .then(() => {
+        console.log("Audio Context resumed via Touch!");
+      });
+  }
+  return false;
 }

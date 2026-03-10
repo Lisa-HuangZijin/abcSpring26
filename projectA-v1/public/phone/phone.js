@@ -4,7 +4,9 @@ let socket;
 let fallingWords = [];
 let words = []; //存储matter.js的物理身体
 let wordCount = 0;
-let wordPondlimit = 10;
+let wordPondlimit = 180;
+
+let figure;
 
 let engine;
 let world;
@@ -14,12 +16,12 @@ function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
   canvas.parent("p5-canvas-container");
 
-  //初始化物理引擎
+  // 初始化物理引擎
   engine = Engine.create();
   world = engine.world;
   engine.world.gravity.y = 0.8;
 
-  //给matter.js的边界
+  // 给matter.js的边界
   ground = Bodies.rectangle(width / 2, height + 25, width, 50, {
     isStatic: true,
   });
@@ -48,6 +50,10 @@ function setup() {
   });
 }
 
+function preload() {
+  figure = loadImage("figure.png");
+}
+
 function draw() {
   background(11, 21, 107);
 
@@ -55,6 +61,13 @@ function draw() {
   fill(255, 100);
   textSize(16);
   text("Count: " + wordCount, 20, 30);
+
+  push();
+  translate(width / 2 - 55, height - 200);
+  scale(0.3);
+  tint(255, 100);
+  image(figure, 0, 0);
+  pop();
 
   for (let i = 0; i < words.length; i++) {
     words[i].show();

@@ -71,10 +71,10 @@ io.on("connection", (socket) => {
 
     if (phoneID) {
       //调用拆分function
-      const chunks = splitText(data.text, 20);
+      const chunks = splitText(data.text, 10);
 
       chunks.forEach((chunk, index) => {
-        //设定一个逐渐累加的延迟，模拟“散落”效果
+        //不要每个东西一起落下去，模拟“散落”效果
         setTimeout(() => {
           if (phoneID) {
             let dropX = Math.random();
@@ -83,7 +83,7 @@ io.on("connection", (socket) => {
               x_ratio: dropX,
             });
           }
-        }, index * 150); //每个碎片间隔 120ms
+        }, index * 150); //每个碎片间隔120ms
       });
     } else {
       console.log("fail-to-load:phone-is-not-online");

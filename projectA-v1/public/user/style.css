@@ -3,28 +3,256 @@ body{
     overflow: hidden;
 }
 
-.canvas-wrapper{
+/* .canvas-wrapper{
     width:100%;
     height:100dvh;
-    /* background-color: #fcdddd; */
-    background-color: black;
+    background-color: #0b156b;
     display: flex;
     align-items: center;
     justify-content: center;
     
+} */
+
+.canvas-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100dvh; 
+    pointer-events: none;
+    background-color: #0b156b;
+    /* 确保不会因为偏移产生滚动条 */
+    overflow: hidden; 
+}
+
+.canvas-wrapper svg {
+    position: absolute;
+}
+
+.header-rect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; 
+    
+    background: rgba(255, 255, 255, 0.01); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.contact-item {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    display: flex;         
+    flex-direction: row;   /* 确保是横向排列 */
+    align-items: center;   
+    gap: 10px;            
+}
+
+.contact-item svg {
+    position: relative;   
+    flex-shrink: 0;      
+    display: block;       
+}
+
+.contact-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;    
+    color: rgba(255, 255, 255, 0.7); 
+    font-family: "Courier New", Courier, monospace;
+}
+
+.contact-status {
+    color: rgba(255, 255, 255, 0.7); 
+    font-family: "Courier New", Courier, monospace;
+    font-size: 10px;
+    /* text-transform: uppercase; */  /* 感觉大些还是差点意思 */
+
+    margin-top: 2px;
+
+    display: flex;
+    align-items: center;
+    gap: 6px; /* 圆点和文字之间的间距 */
+}
+
+/* 在文字前面画一个绿点 */
+.contact-status::before {
+    content: "";   
+    width: 6px;   
+    height: 6px;
+    background-color: #00ff00; 
+    border-radius: 50%;      
+    
+    box-shadow: 0 0 5px #00ff00;/* 发光效果 */
+    animation: blink 2s infinite;/* 让绿点像呼吸一样闪烁 */
+}
+
+/* 呼吸闪烁动画 */
+@keyframes blink {
+    0% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 0.3; transform: scale(0.8); }
+}
+
+/* .avatar-right1 {
+    right: 15px;  
+    top: 115px;   
+}
+
+.avatar-left {
+    left: 15px;   
+    top: 190px;   
+}
+.avatar-right2 {
+    right: 15px;  
+    top: 260px;   
+}
+.avatar-right3 {
+    right: 15px;  
+    top: 328px;   
+} */
+
+.bubble {
+    padding: 10px 15px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    max-width: 200px;
+}
+
+.user-style {
+    background: rgba(255, 0, 0, 0.05);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    border-radius: 15px 15px 0 15px;
+    color: #ffcccc; /* 淡淡的红白字 */
+}
+
+.other-style {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px 15px 15px 0;
+    color: white;
+}
+
+.msg-row {
+    position: absolute;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.row-right {
+    right: 15px;
+    gap: 10px;
+}
+
+.row-right svg {
+    position: relative; 
+}
+
+.row-left {
+    left: 15px;
+    gap: 10px;
+}
+
+.row-left svg {
+    position: relative; 
 }
 
 
 .overlay{
-
-    width:100%;
-    height:100dvh;
-    /* background-color: #fcdddd; */
-
+    width: 100%;
+    height: 100dvh; 
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column; 
+    align-items:center;
+    justify-content: flex-end; 
     position: absolute;
-    left:0;
-    top:0;
+    left: 0;
+    top: 0;
+    padding-bottom: 20px;
+    box-sizing: border-box;
+   
 }
+
+#chatForm {
+    display: flex;
+    width: 95%; 
+    max-width: 550px; 
+    height: 42px; 
+    gap: 10px;
+    align-items: center;
+}
+
+#newMessage {
+    flex: 1; /* 这会让输入框横向拉伸，直到填满 form 剩余的所有空间 */
+    height: 100%; /* 跟随父容器高度 */
+    
+    padding: 0 15px; 
+    
+    font-size: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
+    color: white;
+    border-radius: 18px;
+    outline: none;
+}
+
+button {
+    height: 100%;
+    padding: 0 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background:rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+
+    transition: transform 0.05s ease-out, background-color 0.1s;
+}
+
+#chatForm button:active {
+    background-color: #ffffff ; 
+    transform: scale(1.2) ; 
+    border-color: #ffffff ;
+    opacity: 1 ;
+    color: #0b156b;
+}
+
+.fade-out-msg {
+    position: absolute;
+    top: 380px;      
+    right: 15px;      
+    display: flex;
+    gap: 10px;
+    align-items: flex-end; /* 底部对齐 */
+    animation: popAndFade 1.5s forwards;
+}
+
+.fade-out-msg svg {
+    position: relative;
+}
+
+@keyframes popAndFade {
+    0% { opacity: 0; transform: translateY(10px); }
+    15% { opacity: 1; transform: translateY(0); }
+    50% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+
+.error-icon {
+    margin-right: -16px; 
+    flex-shrink: 0;
+}
+

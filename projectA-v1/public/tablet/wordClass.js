@@ -34,6 +34,10 @@ class AcidWord {
     this.minRepelRadius = 22;
   }
   applyRepulsion(others, index) {
+    // 1. 如果这个词已经很安静了，没必要每帧都计算复杂的排斥
+    if (this.vel.magSq() < 0.001 && frameCount % 2 === 0) return;
+
+    // 依然计算一次开方，因为你需要这个精确的线性距离来计算 radius
     let distToCenter = dist(
       this.pos.x,
       this.pos.y,
@@ -54,14 +58,23 @@ class AcidWord {
       this.maxRepelRadius,
     );
 
+    // 关键：预存半径的平方
+    let rSq = currentRadius * currentRadius;
+
     for (let i = 0; i < others.length; i++) {
       if (i !== index) {
         let other = others[i];
-        let d = dist(this.pos.x, this.pos.y, other.pos.x, other.pos.y);
+        let dx = this.pos.x - other.pos.x;
+        let dy = this.pos.y - other.pos.y;
 
-        //堆积感1，字体的半径变了
-        if (d < currentRadius) {
-          let angle = atan2(this.pos.y - other.pos.y, this.pos.x - other.pos.x);
+        // 2.【核心优化】先用平方进行极其快速的预判
+        let dSq = dx * dx + dy * dy;
+
+        // 如果平方距离已经大于半径平方，那它们绝对没有碰撞，直接跳过
+        if (dSq < rSq && dSq > 0) {
+          // 3. 只有确认进入了“排斥圈”的少数文字，才执行昂贵的 dist/atan2/map
+          let d = sqrt(dSq);
+          let angle = atan2(dy, dx);
           let strengthFactor = map(distToCenter, 0, 200, 0.1, 1.0);
           let strength = map(d, 0, currentRadius, 0.8, 0) * strengthFactor;
 
@@ -70,7 +83,6 @@ class AcidWord {
       }
     }
   }
-
   update(ripples) {
     for (let r of ripples) {
       // 1. 不能被自己生的涟漪推 2. 每个涟漪只能推一次

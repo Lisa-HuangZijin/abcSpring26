@@ -13,8 +13,8 @@
   <link rel="stylesheet" type="text/css" href="style.css">
 
 
-  <script src="lib/p5.js"></script>
-  <script src="lib/p5.sound.js"></script>
+  <!-- <script src="lib/p5.js"></script> -->
+  <!-- <script src="lib/p5.sound.js"></script> -->
   
   <!-- include socket.io library: -->
   <!-- <script src="/socket.io/socket.io.js"></script>  -->
@@ -26,13 +26,65 @@
 <body>
 
   <div class="canvas-wrapper">
-    <div id="p5-canvas-container"></div>
+
+    <div class="header-rect">
+        <div class="contact-item">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+                <circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.5)" stroke-width="1" fill="none" />
+            </svg>
+            <div class="contact-text">
+                <div class="contact-name">DDD</div>
+                <div class="contact-status">online</div>
+            </div>
+        </div>
+</div>
 
 
+    <!-- <svg class="avatar-right1" width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="rgba(255,255,255,0.4)" />
+    </svg> -->
 
+     <!-- <svg class="avatar-left" width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.5)" stroke-width="1" fill="none" />
+    </svg> -->
+
+    <!-- <svg class="avatar-right2" width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="rgba(255,255,255,0.4)" />
+    </svg> -->
+
+    <!-- <svg class="avatar-right3" width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="rgba(255,255,255,0.4)" />
+    </svg> -->
+
+    <div class="msg-row row-right" style="top: 80px;">
+        <div class="bubble user-style">I don't know how to help if you don't let me in</div>
+        <svg width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="rgba(255,255,255,0.4)" />
+    </svg> </div>
+
+    <div class="msg-row row-left" style="top: 190px;">
+      <svg width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.5)" stroke-width="1" fill="none" />
+    </svg>
+        <div class="bubble other-style">Then don't</div>
+       </div>
+
+    <div class="msg-row row-right" style="top: 260px;">
+        <div class="bubble user-style">But I have to.</div>
+        <svg width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="rgba(255,255,255,0.4)" />
+    </svg> </div>
+
+    <div class="msg-row row-right" style="top: 310px;">
+        <div class="bubble user-style">I can't just leave you like this.</div>
+        <svg width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="rgba(255,255,255,0.4)" />
+    </svg>
+ </div>
     
+</div>
   
-  </div>
+  
   <div class="overlay">
      <div>
       <form id="chatForm">
@@ -46,12 +98,6 @@
     
   
   </div>
-
- 
-
-  
-
-
 
   <!-- the script tag below should always be at the bottom, right before the closing body tag -->
   <script src="user.js"></script>
