@@ -34,10 +34,10 @@ class AcidWord {
     this.minRepelRadius = 22;
   }
   applyRepulsion(others, index) {
-    // 1. 如果这个词已经很安静了，没必要每帧都计算复杂的排斥
+    // 如果这个词已经很安静了，没必要每帧都计算复杂的排斥
     if (this.vel.magSq() < 0.001 && frameCount % 2 === 0) return;
 
-    // 依然计算一次开方，因为你需要这个精确的线性距离来计算 radius
+    // 依然计算一次开方
     let distToCenter = dist(
       this.pos.x,
       this.pos.y,
@@ -67,12 +67,12 @@ class AcidWord {
         let dx = this.pos.x - other.pos.x;
         let dy = this.pos.y - other.pos.y;
 
-        // 2.【核心优化】先用平方进行极其快速的预判
+        // 先用平方进行极其快速的预判
         let dSq = dx * dx + dy * dy;
 
         // 如果平方距离已经大于半径平方，那它们绝对没有碰撞，直接跳过
         if (dSq < rSq && dSq > 0) {
-          // 3. 只有确认进入了“排斥圈”的少数文字，才执行昂贵的 dist/atan2/map
+          // 只有确认进入了“排斥圈”的少数文字，才执行昂贵的 dist/atan2/map
           let d = sqrt(dSq);
           let angle = atan2(dy, dx);
           let strengthFactor = map(distToCenter, 0, 200, 0.1, 1.0);
