@@ -26,8 +26,6 @@ function newMessageSubmitted(event) {
 
   if (newText.length > 0) {
     sendMessage(newText);
-
-    // --- 新增：创建并添加消失的消息 ---
     appendFadingMessage(newText);
 
     msgInput.value = "";
@@ -38,12 +36,12 @@ function newMessageSubmitted(event) {
 function appendFadingMessage(txt) {
   const wrapper = document.querySelector(".canvas-wrapper");
 
-  // 1. 创建容器
+  // 创建容器
   const msgContainer = document.createElement("div");
   msgContainer.className = "fade-out-msg";
 
-  // 2. 构造内部 HTML (气泡 + 对应的 User 头像)
-  // 这里直接复用了你之前的 user-style 气泡和头像 SVG 代码
+  // 构造内部 HTML (气泡 + 对应的 User 头像)
+  // 这是gemini教的，把气泡和user头像放在一起，随后一起被append上去
   msgContainer.innerHTML = `
   <svg class="error-icon" width="40" height="40" viewBox="0 0 22 40" fill="none" stroke="#ff4444" stroke-width="1.5">
   <circle cx="11" cy="20" r="10"></circle>
@@ -68,5 +66,4 @@ function sendMessage(txt) {
   socket.emit("send-to-phone", data);
 }
 
-// 这行代码会“唤醒”移动端浏览器的 :active 状态
 document.addEventListener("touchstart", function () {}, true);
