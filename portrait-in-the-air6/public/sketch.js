@@ -621,6 +621,7 @@ function shareAllGroups() {
       .then((r) => r.json())
       .then((data) => {
         if (data.ok) console.log("Kite sent to sky screen!", data.kite.id);
+        window.open("sky.html", "_self");
       })
       .catch((err) => console.error("Failed to send kite:", err));
 
@@ -629,7 +630,7 @@ function shareAllGroups() {
 
   if (sent == 0) alert("Stitch some pieces together first!");
 
-  window.open("sky.html", "_self");
+  // window.open("sky.html", "_self");
 }
 
 function getGroupOf(c) {
@@ -729,6 +730,6 @@ function updateUILayout() {
   uiLayer.style.height = vv.height * vv.scale + "px";
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
+// function windowResized() {
+//   resizeCanvas(windowWidth, windowHeight);
+// }
