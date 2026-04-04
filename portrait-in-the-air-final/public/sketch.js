@@ -23,7 +23,7 @@ if (
   location.hostname.toLowerCase().startsWith("browsercircus") ||
   location.hostname.toLowerCase().startsWith("www")
 ) {
-  socket = io({ path: "/lesley/port-4290/socket.io" });
+  socket = io({ path: "/lisa/port-4250/socket.io" });
 } else {
   socket = io();
 }
@@ -225,8 +225,8 @@ class MyPoint {
     this.accuracy = 0;
     this.heading = 0;
     this.emojiAdjustAngle = 0;
-    this.startFrame = frameCount; 
-    this.bounceDuration = 60 * 5; 
+    this.startFrame = frameCount;
+    this.bounceDuration = 60 * 5;
   }
   update() {
     this.x = this.goalX; // lerp(this.x, this.goalX, 0.2);
@@ -248,9 +248,9 @@ class MyPoint {
     strokeWeight(3);
     //circle(0, 0, this.size + sin(frameCount * 0.1) * 2);
     let bounceY = 0;
-    
+
     if (frameCount - this.startFrame < this.bounceDuration) {
-      bounceY = sin(frameCount * 0.15) * 8; 
+      bounceY = sin(frameCount * 0.15) * 8;
     } else {
       bounceY = 0;
     }
@@ -261,10 +261,10 @@ class MyPoint {
     textAlign(CENTER, CENTER);
     fill(255, 255, 255, 180);
     noStroke();
-    circle(0, 0, 15); 
+    circle(0, 0, 15);
     let ctx = drawingContext;
-    ctx.shadowBlur = 20;        
-    ctx.shadowColor = 'yellow';  
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = "yellow";
 
     textAlign(CENTER, CENTER);
     textSize(40);
