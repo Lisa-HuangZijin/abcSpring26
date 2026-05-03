@@ -6,7 +6,7 @@ if (
   location.hostname.toLowerCase().startsWith("browsercircus") ||
   location.hostname.toLowerCase().startsWith("www")
 ) {
-  socket = io({ path: "/canvas-photo/socket.io" });
+  socket = io({ path: "/lisa/port-4250/socket.io" });
 } else {
   socket = io();
 }
