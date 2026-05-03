@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+  <title>Bead Curtain</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { 
+      touch-action: none; 
+      overscroll-behavior: none;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Photo picker overlay ── -->
+  <div id="photo-overlay" class="hidden">
+    <div id="photo-card">
+      <p id="photo-title">Choose a photo</p>
+      <p id="photo-subtitle">pull 5 colors from it for your beads</p>
+
+      <!-- Preview + swatches, hidden until image chosen -->
+      <div id="preview-area" style="display:none">
+        <img id="preview-img" alt="preview" />
+        <div id="swatches"></div>
+      </div>
+
+      <label id="pick-btn">
+        📷 Pick a photo
+        <input type="file" id="photo-input" accept="image/*" style="display:none" />
+      </label>
+
+      <button id="finish-btn" disabled>Finish →</button>
+    </div>
+  </div>
+
+  <!-- curtain UI -->
+  <div id="p5-canvas-container"></div>
+  <div id="legend"><span id="legend-dot"></span>your chain(s)</div>
+  <button id="addchainButton">＋ Add my chain</button>
+
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+  <script src="lib/p5.js"></script>
+  <script src="lib/p5.sound.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
+  <script src="socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

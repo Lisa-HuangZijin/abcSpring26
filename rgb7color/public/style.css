@@ -1,0 +1,258 @@
+body {
+  background: #fcfcfc;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+#intro-anim {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('frames/frame0.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: 199998;  /* overlay(199999)の一つ下 */
+  opacity: 0;       /* overlayと一緒に表示制御 */
+  pointer-events: none;
+}
+
+#intro-anim.playing {
+  animation: intro-frames 2s steps(9, end) 1 forwards;
+  /* 不要加 transition，会跟 animation 冲突 */
+}
+
+#intro-anim.visible {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+#intro-anim.fade-out {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#intro-anim.playing {
+  animation: intro-frames 2s steps(9, end) 1 forwards;
+}
+
+@keyframes intro-frames {
+  0%   { background-image: url('frames/frame1.jpg'); }
+  12%  { background-image: url('frames/frame2.jpg'); }
+  23%  { background-image: url('frames/frame3.jpg'); }
+  34%  { background-image: url('frames/frame4.jpg'); }
+  45%  { background-image: url('frames/frame5.jpg'); }
+  56%  { background-image: url('frames/frame6.jpg'); }
+  67%  { background-image: url('frames/frame7.jpg'); }
+  78%  { background-image: url('frames/frame8.jpg'); }
+  89%  { background-image: url('frames/frame9.jpg'); }
+  100% { background-image: url('frames/frame9.jpg'); }
+}
+
+#photo-overlay {
+  position: fixed;
+  inset: 0;
+  background: #f5f5f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+#photo-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#photo-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px 28px 28px;
+  width: min(88vw, 360px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+#photo-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+#photo-subtitle {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+  margin-top: -8px;
+}
+
+/* preview image */
+#preview-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#preview-img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+/* color swatches row */
+#swatches {
+  display: flex;
+  gap: 8px;
+}
+
+.swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  flex-shrink: 0;
+}
+
+/* pick button (label acting as button) */
+#pick-btn {
+  display: inline-block;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 24px;
+  padding: 12px 26px;
+  font-size: 15px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+}
+#pick-btn:active { background: #444; }
+
+/* finish button */
+#finish-btn {
+  width: 100%;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 14px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+#finish-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+#finish-btn:not(:disabled):active { background: #444; }
+
+#p5-canvas-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#p5-canvas-container canvas {
+  display: block;
+  height: 100vh !important;
+}
+
+/* ── Add chain button ────────────────────────────────────── */
+#addchainButton {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: rgba(30, 30, 30, 0.88);
+  color: #fff;
+  border: none;
+  border-radius: 28px;
+  padding: 13px 22px;
+  font-size: 15px;
+  cursor: pointer;
+  z-index: 9999;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+#addchainButton:active { background: rgba(80, 80, 80, 0.95); }
+
+#legend {
+  position: fixed;
+  top: 14px; left: 14px;
+  font-size: 12px;
+  color: rgba(0,0,0,0.38);
+  pointer-events: none;
+  z-index: 9999;
+}
+#legend-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgb(0, 180, 120);
+  margin-right: 5px;
+  vertical-align: middle;
+}
+/* ── Intro overlay ───────────────────────────────────────── */
+#intro-overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 199999;
+  opacity: 0;
+  pointer-events: none;
+}
+#intro-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.3s ease;
+}
+#intro-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+#intro-overlay.hidden {
+  display: none;
+}
+#intro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+#intro-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: 0.02em;
+}
+#intro-sub {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 12px;
+}
+#intro-btn {
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 28px;
+  padding: 14px 36px;
+  font-size: 16px;
+  cursor: pointer;
+}
+#intro-btn:active {
+  background: #444;
+  transform: scale(0.97);
+}

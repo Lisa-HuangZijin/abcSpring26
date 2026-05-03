@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+  <title>Bead Curtain</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  </style>
+</head>
+<body>
+   <div id="p5-canvas-container"></div>
+  <div id="legend"><span id="legend-dot"></span>your chain(s)</div>
+  <button id="addchainButton">＋ Add my chain</button> 
+  <input style="position: absolute; top:100px" type="file" accept="image/*">
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+
+  <script src="lib/p5.js"></script>
+  <script src="lib/p5.sound.js"></script> 
+  <!-- Matter.js from CDN — download to lib/matter.min.js for local hosting -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script> 
+  <script src="socket.io/socket.io.js"></script>
+  <script src="script.js"></script> 
+</body>
+</html>

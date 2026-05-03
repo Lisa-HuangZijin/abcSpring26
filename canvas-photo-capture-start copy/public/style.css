@@ -1,0 +1,57 @@
+body {
+      background: #fcfcfc;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    #p5-canvas-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+
+    #p5-canvas-container canvas {
+      display: block;
+      /* height always matches viewport */
+      height: 100vh !important;
+    }
+
+    #addchainButton {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: rgba(30, 30, 30, 0.88);
+      color: #fff;
+      border: none;
+      border-radius: 28px;
+      padding: 13px 22px;
+      font-size: 15px;
+      cursor: pointer;
+      z-index: 9999;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    #addchainButton:active { background: rgba(80, 80, 80, 0.95); }
+
+    #legend {
+      position: fixed;
+      top: 14px; left: 14px;
+      font-size: 12px;
+      color: rgba(0,0,0,0.38);
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #legend-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgb(0, 180, 120);
+      margin-right: 5px;
+      vertical-align: middle;
+    }

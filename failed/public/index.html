@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Bead Curtain</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f7f5f0;
+      --ink: #1a1a1a;
+      --muted: #888;
+      --pill-bg: rgba(255,255,255,0.88);
+      --pill-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      --radius: 20px;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+      height: 100dvh;
+      color: var(--ink);
+    }
+
+    /* ════════════════════════════════════
+       SCREENS
+    ════════════════════════════════════ */
+    .screen {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.5s, transform 0.5s;
+      padding: 32px 24px;
+      gap: 0;
+    }
+    .screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(24px);
+    }
+
+    /* ════════════════════════════════════
+       SCREEN 1 — WELCOME
+    ════════════════════════════════════ */
+    #screenWelcome {
+      gap: 0;
+    }
+
+    /* Mini curtain preview */
+    #previewWrap {
+      position: relative;
+      width: 100%;
+      max-width: 340px;
+      height: 52vh;
+      margin-bottom: 36px;
+    }
+
+    #previewCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Arrow overlay pointing at the highlighted column */
+    #arrowOverlay {
+      position: absolute;
+      bottom: -8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+      transition: left 0.4s;
+    }
+    #arrowLabel {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--ink);
+      white-space: nowrap;
+      margin-bottom: 4px;
+      background: var(--bg);
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    #arrowSvg { width: 20px; height: 28px; }
+
+    #welcomeText {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    #welcomeText h1 {
+      font-size: clamp(22px, 5vw, 28px);
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+    #welcomeText p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    #btnStart {
+      width: 100%;
+      max-width: 280px;
+      padding: 17px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: transform 0.12s, opacity 0.12s;
+    }
+    #btnStart:active { transform: scale(0.97); opacity: 0.85; }
+
+    /* ════════════════════════════════════
+       SCREEN 2 — UPLOAD
+    ════════════════════════════════════ */
+    #screenUpload {
+      gap: 24px;
+      justify-content: flex-start;
+      padding-top: max(56px, env(safe-area-inset-top) + 24px);
+    }
+
+    #uploadHeader {
+      text-align: center;
+      width: 100%;
+    }
+    #uploadHeader h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    #uploadHeader p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* Photo picker zone */
+    #photoZone {
+      width: 100%;
+      max-width: 340px;
+      aspect-ratio: 1;
+      border-radius: var(--radius);
+      border: 2px dashed #ccc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      overflow: hidden;
+      position: relative;
+      background: #fff;
+    }
+    #photoZone:active { background: #f0f0f0; }
+    #photoZone.has-image { border-style: solid; border-color: var(--ink); }
+
+    #photoPreviewImg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: none;
+      border-radius: calc(var(--radius) - 2px);
+    }
+    #photoZone.has-image #photoPreviewImg { display: block; }
+    #photoZone.has-image .photo-placeholder { display: none; }
+
+    .photo-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .photo-placeholder span { font-size: 36px; }
+    .photo-placeholder p { font-size: 14px; }
+
+    /* Swatches */
+    #swatchRow {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+    }
+    .swatch {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .swatch:hover { transform: scale(1.1); }
+
+    #btnBegin {
+      width: 100%;
+      max-width: 340px;
+      padding: 17px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      opacity: 0.35;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.12s;
+    }
+    #btnBegin.ready { opacity: 1; pointer-events: auto; }
+    #btnBegin:active { transform: scale(0.97); }
+
+    /* hidden file input */
+    #elFileInput { display: none; }
+
+    /* ════════════════════════════════════
+       SCREEN 3 — CURTAIN
+    ════════════════════════════════════ */
+    #screenCurtain { padding: 0; }
+
+    /* p5 canvas fills screen */
+    #curtainCanvas {
+      position: fixed; inset: 0;
+      display: block;
+      z-index: 1;
+    }
+
+    /* "Create More" button */
+    #btnCreateMore {
+      position: fixed;
+      bottom: 28px; right: 24px;
+      z-index: 200;
+      padding: 13px 22px;
+      border: none;
+      border-radius: 40px;
+      background: var(--pill-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: var(--pill-shadow);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.12s;
+    }
+    #btnCreateMore.visible { display: flex; }
+    #btnCreateMore:active { transform: scale(0.96); }
+
+    /* Mini palette dots top-left */
+    #myPaletteDots {
+      position: fixed;
+      top: max(20px, env(safe-area-inset-top) + 8px);
+      left: 20px;
+      z-index: 200;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    #myPaletteDots.visible { opacity: 1; }
+    .dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── SCREEN 1: WELCOME ── -->
+  <div class="screen" id="screenWelcome">
+    <div id="previewWrap">
+      <canvas id="previewCanvas"></canvas>
+      <div id="arrowOverlay">
+        <div id="arrowLabel">your strand</div>
+        <svg id="arrowSvg" viewBox="0 0 20 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 0 L10 20 M4 14 L10 22 L16 14" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <div id="welcomeText">
+      <h1>Your memory, beaded.</h1>
+      <p>Upload a photo and we'll weave its colors into a strand of the curtain — just for you.</p>
+    </div>
+
+    <button id="btnStart">Start →</button>
+  </div>
+
+  <!-- ── SCREEN 2: UPLOAD ── -->
+  <div class="screen hidden" id="screenUpload">
+    <div id="uploadHeader">
+      <h2>Choose a photo</h2>
+      <p>We'll pull 5 colors from it for your strand</p>
+    </div>
+
+    <div id="photoZone">
+      <img id="photoPreviewImg" alt=""/>
+      <div class="photo-placeholder">
+        <span>🖼</span>
+        <p>Tap to choose a photo</p>
+      </div>
+    </div>
+
+    <div id="swatchRow"></div>
+
+    <button id="btnBegin">Begin →</button>
+  </div>
+
+  <input type="file" id="elFileInput" accept="image/*"/>
+
+  <!-- ── SCREEN 3: CURTAIN ── -->
+  <div class="screen hidden" id="screenCurtain">
+    <!-- p5 canvas injected here by sketch.js -->
+  </div>
+
+  <button id="btnCreateMore">＋ Create more strands</button>
+
+  <div id="myPaletteDots"></div>
+
+  <!-- ── Libraries ── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+  // ════════════════════════════════════════════════════════
+  //  APP STATE
+  // ════════════════════════════════════════════════════════
+  const TOTAL_COLS = 20;
+
+  // Persisted across refresh via localStorage
+  let myColIndex   = null;   // which column belongs to this user
+  let myPalettes   = [];     // array of palettes this user has submitted: [ [[r,g,b],...], ... ]
+                             // each palette → one column starting from myColIndex
+
+  // Pending: extracted from photo, not yet confirmed
+  let pendingPalette = null;
+
+  // All columns known from server
+  let allColumns = [];       // [{ colIndex, palette }, ...]
+
+  // ── Restore from localStorage ──────────────────────────
+  (function restoreSession() {
+    try {
+      const saved = localStorage.getItem("beadCurtain");
+      if (saved) {
+        const data = JSON.parse(saved);
+        myColIndex = data.myColIndex ?? null;
+        myPalettes = data.myPalettes ?? [];
+      }
+    } catch(e) {}
+  })();
+
+  function saveSession() {
+    localStorage.setItem("beadCurtain", JSON.stringify({ myColIndex, myPalettes }));
+  }
+
+  // ════════════════════════════════════════════════════════
+  //  SOCKET
+  // ════════════════════════════════════════════════════════
+  let socket;
+  if (location.hostname.toLowerCase().startsWith("browsercircus") ||
+      location.hostname.toLowerCase().startsWith("www")) {
+    socket = io({ path: "/canvas-photo/socket.io" });
+  } else {
+    socket = io();
+  }
+
+  socket.on("all-columns", ({ columns, total }) => {
+    allColumns = columns;
+    // If sketch is already running, refresh it
+    if (window.setCurtainData) window.setCurtainData(allColumns, myColIndex, myPalettes);
+  });
+
+  socket.on("column-updated", (entry) => {
+    const idx = allColumns.findIndex(c => c.colIndex === entry.colIndex);
+    if (idx >= 0) allColumns[idx] = entry; else allColumns.push(entry);
+    if (window.setCurtainData) window.setCurtainData(allColumns, myColIndex, myPalettes);
+  });
+
+  // ════════════════════════════════════════════════════════
+  //  COLOR EXTRACTION  (k-means)
+  // ════════════════════════════════════════════════════════
+  const offscreen = document.createElement("canvas");
+  offscreen.width = offscreen.height = 100;
+  const offCtx = offscreen.getContext("2d");
+
+  function extractColors(ctx, n) {
+    const data = ctx.getImageData(0, 0, 100, 100).data;
+    const samples = [];
+    for (let i = 0; i < data.length; i += 16) {
+      if (data[i+3] < 128) continue;
+      samples.push([data[i], data[i+1], data[i+2]]);
+    }
+    const step = Math.floor(samples.length / n);
+    let centroids = Array.from({length: n}, (_, i) => [...samples[i * step]]);
+    for (let iter = 0; iter < 10; iter++) {
+      const clusters = Array.from({length: n}, () => []);
+      for (const s of samples) {
+        let best = 0, bestD = Infinity;
+        for (let k = 0; k < n; k++) {
+          const d = (s[0]-centroids[k][0])**2+(s[1]-centroids[k][1])**2+(s[2]-centroids[k][2])**2;
+          if (d < bestD) { bestD = d; best = k; }
+        }
+        clusters[best].push(s);
+      }
+      for (let k = 0; k < n; k++) {
+        if (!clusters[k].length) continue;
+        const sum = [0,0,0];
+        for (const s of clusters[k]) { sum[0]+=s[0]; sum[1]+=s[1]; sum[2]+=s[2]; }
+        centroids[k] = sum.map(v => Math.round(v / clusters[k].length));
+      }
+    }
+    return centroids;
+  }
+
+  // ════════════════════════════════════════════════════════
+  //  WELCOME SCREEN — mini curtain preview
+  // ════════════════════════════════════════════════════════
+  const previewCanvas = document.getElementById("previewCanvas");
+  const previewCtx    = previewCanvas.getContext("2d");
+  const arrowOverlay  = document.getElementById("arrowOverlay");
+
+  function drawPreview(highlightCol) {
+    const W = previewCanvas.offsetWidth;
+    const H = previewCanvas.offsetHeight;
+    previewCanvas.width  = W * devicePixelRatio;
+    previewCanvas.height = H * devicePixelRatio;
+    previewCtx.scale(devicePixelRatio, devicePixelRatio);
+
+    const cols  = TOTAL_COLS;
+    const beads = 12;
+    const colW  = W / cols;
+    const beadR = Math.min(colW * 0.32, 7);
+    const stepY = H / (beads + 1);
+
+    previewCtx.clearRect(0, 0, W, H);
+
+    for (let c = 0; c < cols; c++) {
+      const cx = colW * c + colW / 2;
+      const isHighlight = (c === highlightCol);
+
+      // find color for this column
+      const entry = allColumns.find(e => e.colIndex === c);
+      const pal   = entry ? entry.palette : null;
+
+      // thread
+      previewCtx.strokeStyle = isHighlight ? "#1a1a1a" : "#ccc";
+      previewCtx.lineWidth   = isHighlight ? 1.5 : 0.8;
+      previewCtx.beginPath();
+      previewCtx.moveTo(cx, 0);
+      previewCtx.lineTo(cx, H);
+      previewCtx.stroke();
+
+      for (let b = 1; b <= beads; b++) {
+        const cy = stepY * b;
+        let col;
+        if (pal) {
+          const pc = pal[b % pal.length];
+          col = `rgb(${pc[0]},${pc[1]},${pc[2]})`;
+        } else if (isHighlight) {
+          col = "#d0d0d0";
+        } else {
+          col = "#e8e8e8";
+        }
+        previewCtx.beginPath();
+        previewCtx.arc(cx, cy, isHighlight ? beadR * 1.3 : beadR, 0, Math.PI * 2);
+        previewCtx.fillStyle = col;
+        previewCtx.fill();
+      }
+    }
+
+    // position arrow
+    const arrowX = colW * highlightCol + colW / 2;
+    arrowOverlay.style.left = arrowX + "px";
+    arrowOverlay.style.transform = "translateX(-50%)";
+  }
+
+  // ════════════════════════════════════════════════════════
+  //  SCREEN TRANSITIONS
+  // ════════════════════════════════════════════════════════
+  function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+
+    // Show/hide the p5 canvas
+    const cnv = document.getElementById("curtainCanvas");
+    if (cnv) cnv.style.display = (id === "screenCurtain") ? "block" : "none";
+
+    // When arriving at curtain, resize canvas to match window
+    // Use requestAnimationFrame so the canvas is visible before we measure
+    if (id === "screenCurtain") {
+      requestAnimationFrame(() => {
+        if (window._p5ResizeCurtain) window._p5ResizeCurtain();
+      });
+    }
+  }
+
+  // ── Screen 1 → 2 ──────────────────────────────────────
+  document.getElementById("btnStart").addEventListener("click", async () => {
+    // Assign column if not already done
+    if (myColIndex === null) {
+      try {
+        const res  = await fetch("/assign-column", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ existingCol: null }),
+        });
+        const data = await res.json();
+        myColIndex = data.colIndex;
+        saveSession();
+      } catch(e) {
+        console.error("assign column failed", e);
+      }
+    }
+    showScreen("screenUpload");
+  });
+
+  // ── Screen 2 photo zone ───────────────────────────────
+  const elFileInput      = document.getElementById("elFileInput");
+  const elPhotoZone      = document.getElementById("photoZone");
+  const elPhotoPreview   = document.getElementById("photoPreviewImg");
+  const elSwatchRow      = document.getElementById("swatchRow");
+  const elBtnBegin       = document.getElementById("btnBegin");
+
+  elPhotoZone.addEventListener("click", () => elFileInput.click());
+
+  elFileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    elFileInput.value = "";
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const img = new Image();
+      img.onload = () => {
+        // show photo preview
+        elPhotoPreview.src = evt.target.result;
+        elPhotoZone.classList.add("has-image");
+
+        // extract colors
+        offCtx.drawImage(img, 0, 0, 100, 100);
+        pendingPalette = extractColors(offCtx, 5);
+
+        // show swatches
+        elSwatchRow.innerHTML = "";
+        for (const [r,g,b] of pendingPalette) {
+          const div = document.createElement("div");
+          div.className = "swatch";
+          div.style.background = `rgb(${r},${g},${b})`;
+          elSwatchRow.appendChild(div);
+        }
+
+        // enable Begin
+        elBtnBegin.classList.add("ready");
+      };
+      img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ── Screen 2 → 3 ──────────────────────────────────────
+  elBtnBegin.addEventListener("click", async () => {
+    if (!pendingPalette || myColIndex === null) return;
+
+    // Determine which column this palette goes to:
+    // first palette → myColIndex, subsequent → next free columns
+    // For simplicity, each time "Begin" is pressed from "Create More"
+    // the server gives us myColIndex; we track extra columns in myPalettes.
+    // The active column for this submission:
+    const targetCol = myColIndex + myPalettes.length;
+
+    // If targetCol is beyond TOTAL_COLS, wrap or just use mod
+    const col = targetCol % TOTAL_COLS;
+
+    // Save to server
+    try {
+      await fetch("/upload-colors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ colIndex: col, palette: pendingPalette }),
+      });
+    } catch(e) { console.error(e); }
+
+    myPalettes.push(pendingPalette);
+    saveSession();
+
+    // Update local allColumns immediately
+    const idx = allColumns.findIndex(c => c.colIndex === col);
+    if (idx >= 0) allColumns[idx].palette = pendingPalette;
+    else allColumns.push({ colIndex: col, palette: pendingPalette });
+
+    // Update palette dots
+    updateMyDots();
+
+    // Store data first so _p5ResizeCurtain can pick it up immediately
+    window._pendingCurtainData = { allColumns, myColIndex, myPalettes };
+
+    // Then switch screen (triggers resize via requestAnimationFrame,
+    // which will apply _pendingCurtainData)
+    showScreen("screenCurtain");
+    document.getElementById("btnCreateMore").classList.add("visible");
+
+    pendingPalette = null;
+    elBtnBegin.classList.remove("ready");
+  });
+
+  // ── Create More ────────────────────────────────────────
+  document.getElementById("btnCreateMore").addEventListener("click", () => {
+    // Reset upload UI
+    elPhotoZone.classList.remove("has-image");
+    elPhotoPreview.src = "";
+    elSwatchRow.innerHTML = "";
+    elBtnBegin.classList.remove("ready");
+    pendingPalette = null;
+    showScreen("screenUpload");
+  });
+
+  // ── Palette dots (top-left) ────────────────────────────
+  function updateMyDots() {
+    const el = document.getElementById("myPaletteDots");
+    el.innerHTML = "";
+    // Show dots for the most recent palette
+    const latest = myPalettes[myPalettes.length - 1];
+    if (!latest) return;
+    for (const [r,g,b] of latest) {
+      const d = document.createElement("div");
+      d.className = "dot";
+      d.style.background = `rgb(${r},${g},${b})`;
+      el.appendChild(d);
+    }
+    el.classList.add("visible");
+  }
+
+  // ════════════════════════════════════════════════════════
+  //  INIT WELCOME SCREEN
+  // ════════════════════════════════════════════════════════
+  // We draw preview once socket delivers data (or immediately with empty)
+  function initWelcome() {
+    if (myColIndex !== null && myPalettes.length > 0) {
+      window._pendingCurtainData = { allColumns, myColIndex, myPalettes };
+      showScreen("screenCurtain");
+      document.getElementById("btnCreateMore").classList.add("visible");
+      updateMyDots();
+      return;
+    }
+
+    const takenCount = allColumns.length;
+    const previewCol = takenCount % TOTAL_COLS;
+    drawPreview(previewCol);
+  }
+
+  // Redraw when server data arrives
+  const _origAllCols = socket.on("all-columns", () => {
+    if (!document.getElementById("screenWelcome").classList.contains("hidden")) {
+      initWelcome();
+    }
+  });
+
+  // Initial draw (may have empty allColumns)
+  initWelcome();
+  </script>
+
+  <!-- p5 sketch -->
+  <script src="sketch.js"></script>
+</body>
+</html>
