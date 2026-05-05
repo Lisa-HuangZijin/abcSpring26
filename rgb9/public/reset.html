@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reset</title>
+  <style>
+    body { margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; background: #fcfcfc; }
+    button { background: #1a1a1a; color: #fff; border: none; border-radius: 24px; padding: 14px 32px; font-size: 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <button onclick="localStorage.removeItem('user-id'); alert('已清除，现在可以关掉这页'); ">清除我的 ID</button>
+</body>
+</html>

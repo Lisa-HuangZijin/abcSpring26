@@ -1,3 +1,4 @@
+// Matter.js — destructured inside setup() after CDN script loads
 let Engine, World, Bodies, Body;
 
 let socket;
@@ -18,32 +19,28 @@ if (
 })();
 
 function getUserId() {
-  return localStorage.getItem("user-id");
+  return localStorage.getItem("user-id"); // なければ null
 }
 function createUserId() {
   let id = crypto.randomUUID();
   localStorage.setItem("user-id", id);
   return id;
 }
-let myUserId = getUserId();
+let myUserId = getUserId(); // 初回は null、Enter 後に設定される
 
 let engine, world, ground;
 let draggingPoint = null;
 
-const MAX_CHAINS = 20;
-
+let ROWS = 16;
+let COL_SPACING = 20;
+let ROW_SPACING = 18;
 let START_Y = 0;
 let START_X = 10;
 
-let ROWS = 16;
-let colSpace = 0;
-let rowSpace = 18;
-
 let chains = [];
-let fallenBeads = []; // 所有掉落的珠子，全局共享//要死了
+let fallenBeads = []; // 所有掉落的珠子，全局共享
 let beadsSavedStill = false;
-let stillFrames = 0;
-let introVisible = !localStorage.getItem("user-id");
+let introVisible = !localStorage.getItem("user-id"); // id なし = intro を表示
 let pendingBreaks = [];
 
 let interactRadius = 50;
@@ -54,7 +51,7 @@ let remotetouchs = {};
 let lasttouchSend = 0;
 
 let chainPalettes = {};
-let chainPhotos = {}; // photoURL dao image in p5
+let chainPhotos = {}; // photoURL → p5 Image
 
 // Extract N dominant colors from an image by shrinking it to a tiny canvas
 function extractColors(imgEl, n) {
@@ -252,17 +249,6 @@ const windBuffers = [];
 function playBreakSound() {
   const n = Math.floor(Math.random() * 6) + 1;
   const buf = windBuffers[n];
-
-  if (!buf) {
-    for (let i = 1; i <= 6; i++) {
-      if (windBuffers[i]) {
-        buf = windBuffers[i];
-        break;
-      }
-    }
-  }
-  //console.log("play sound, buf:", !!buf, "audioCtx state:", audioCtx.state);
-
   if (!buf) return;
   const source = audioCtx.createBufferSource();
   source.buffer = buf;
@@ -279,15 +265,13 @@ function setup() {
 
   let canvas = createCanvas(windowWidth, windowHeight);
   canvas.parent("p5-canvas-container");
-  colSpace = (width - 2 * START_X) / (MAX_CHAINS - 1);
-
   rectMode(CENTER);
 
   engine = Engine.create();
   world = engine.world;
   rebuildGround();
 
-  // p5 is ready:flush any socket data that arrived before setup() finished
+  // p5 is ready — flush any socket data that arrived before setup() finished
   p5Ready = true;
   if (pendingChainsInit !== null) {
     rebuildchains(
@@ -300,38 +284,25 @@ function setup() {
   pendingChainsAppend = [];
 }
 
-let audioUnlocked = false;
-
 function draw() {
   if (introVisible) {
     background(252);
     return;
   }
   background(252);
-
-  if (!audioUnlocked && (mouseIsPressed || touches.length > 0)) {
-    audioCtx.resume();
-    audioUnlocked = true;
-  }
-
   broadcastTouch();
 
   updateChain();
   Engine.update(engine);
 
-  // 珠子全部still后存一次最终位置
+  // 珠子全部静止后存一次最终位置
   if (!beadsSavedStill && fallenBeads.length > 0) {
     let allStill = fallenBeads.every((b) => {
-      let sudu = b.velocity.x * b.velocity.x + b.velocity.y * b.velocity.y;
-      return sudu < 0.12; // 我给的判定的阈值
+      let speed = b.velocity.x * b.velocity.x + b.velocity.y * b.velocity.y;
+      return speed < 0.01;
     });
     if (allStill) {
-      stillFrames++;
-    } else {
-      stillFrames = 0;
-    }
-    if (stillFrames >= 60) {
-      // 连续60帧（约1秒）都静止才存
+      beadsSavedStill = true;
       let groups = {};
       for (let b of fallenBeads) {
         if (b.renderData.evicted) continue;
@@ -354,12 +325,8 @@ function draw() {
           isPhoto: b.renderData.isPhoto || false,
           photoURL: b.renderData.photoURL || null,
         }));
-        if (allStill && hasLocalBreak) {
-          socket.emit("fallen-beads-update", { chainIndex: Number(ci), beads });
-        }
+        socket.emit("fallen-beads-update", { chainIndex: Number(ci), beads });
       }
-      beadsSavedStill = true;
-      stillFrames = 0;
     }
   }
 
@@ -509,16 +476,16 @@ function appendchains(newchainData) {
 function buildchain(chainIndex, userId, hue, seed, photoURL) {
   let pts = [],
     stks = [];
-  let cx = START_X + chainIndex * colSpace;
+  let cx = START_X + chainIndex * COL_SPACING;
   const lenRng = makeSeedID(seed + 999999);
 
   for (let r = 0; r <= ROWS; r++) {
     let b = beadAppearance(chainIndex, hue, r, seed);
     pts.push({
       x: cx,
-      y: r * rowSpace + START_Y,
+      y: r * ROW_SPACING + START_Y,
       oldX: cx,
-      oldY: r * rowSpace + START_Y,
+      oldY: r * ROW_SPACING + START_Y,
       pinned: r === 0,
       active: true,
       row: r,
@@ -533,9 +500,9 @@ function buildchain(chainIndex, userId, hue, seed, photoURL) {
     const isLastStick = r === ROWS - 1;
     let stickLength;
     if (isLastStick) {
-      stickLength = rowSpace * 2;
+      stickLength = ROW_SPACING * 2;
     } else {
-      stickLength = rowSpace * (0.8 + lenRng() * 0.6);
+      stickLength = ROW_SPACING * (0.8 + lenRng() * 0.6);
     }
 
     stks.push({
@@ -723,14 +690,8 @@ function handleInteractions() {
   }
 }
 
-let hasLocalBreak = false;
-
 function applyChainBreak(chain, startRow, silent) {
-  if (!silent) {
-    hasLocalBreak = true;
-  }
   beadsSavedStill = false;
-  stillFrames = 0;
   if (chain.brokenRows.has(startRow)) return;
   chain.brokenRows.add(startRow);
 
@@ -1049,6 +1010,8 @@ function showToast(msg) {
     _toastEl.style.transform = "translateX(-50%) translateY(12px)";
   }, 2800);
 }
+
+const MAX_CHAINS = 20;
 
 (function () {
   let btn = document.getElementById("addchainButton");

@@ -168,30 +168,12 @@ io.on("connection", (socket) => {
         );
         if (st.fallenBeads && st.fallenBeads.length > 0) {
           // 照片珠带上 photoURL，方便 refresh 后恢复
-          const beadsWithPhoto = [];
-          for (let b of st.fallenBeads) {
-            if (b.isPhoto) {
-              beadsWithPhoto.push({
-                x: b.x,
-                yFromBottom: b.yFromBottom,
-                angle: b.angle,
-                vx: b.vx,
-                vy: b.vy,
-                row: b.row,
-                type: b.type,
-                size: b.size,
-                rgb: b.rgb,
-                isPhoto: b.isPhoto,
-                photoURL: b.photoURL || st.photoURL || null,
-                chainIndex: b.chainIndex,
-              });
-            } else {
-              beadsWithPhoto.push(b);
-            }
-          }
-          for (let b of beadsWithPhoto) {
-            orphanedBeads.push(b);
-          }
+          const beadsWithPhoto = st.fallenBeads.map((b) =>
+            b.isPhoto
+              ? { ...b, photoURL: b.photoURL || st.photoURL || null }
+              : b,
+          );
+          orphanedBeads.push(...beadsWithPhoto);
         }
         u.chains = u.chains.filter((s) => s.chainIndex !== st.chainIndex);
         io.emit("chain-evicted", { chainIndex: st.chainIndex });
@@ -231,11 +213,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("chain-break", ({ chainIndex, row }) => {
-    const st = findchainData(chainIndex); //在 server 的数据里找到这条链的数据对象。
+    const st = findchainData(chainIndex);
     if (st && !st.breaks.includes(row)) {
-      //同时满足链存在，而且这一节还没有被记录为断过（防止重复记录，like两个人同时扯同一节）。
       st.breaks.push(row);
-      saveData(); //放进去啊放进去
+      saveData();
     }
     socket.broadcast.emit("remote-break", { chainIndex, row });
   });
@@ -253,22 +234,13 @@ io.on("connection", (socket) => {
           {}
         ).photoURL || null;
       orphanedBeads = orphanedBeads.filter((b) => b.chainIndex !== chainIndex);
-      for (let b of beads) {
-        orphanedBeads.push({
-          x: b.x,
-          yFromBottom: b.yFromBottom,
-          angle: b.angle,
-          vx: b.vx,
-          vy: b.vy,
-          row: b.row,
-          type: b.type,
-          size: b.size,
-          rgb: b.rgb,
-          isPhoto: b.isPhoto,
-          chainIndex: chainIndex,
+      orphanedBeads.push(
+        ...beads.map((b) => ({
+          ...b,
+          chainIndex,
           photoURL: b.isPhoto ? b.photoURL || oldPhotoURL : undefined,
-        });
-      }
+        })),
+      );
       saveData();
     }
     // 广播给其他人，让他们同步掉落珠子的新位置
@@ -276,13 +248,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("touch-move", (data) => {
-    socket.broadcast.emit("remote-touch", {
-      x: data.x,
-      y: data.y,
-      pressing: data.pressing,
-      userId: data.userId,
-      socketId: socket.id,
-    });
+    socket.broadcast.emit("remote-touch", { ...data, socketId: socket.id });
   });
 
   socket.on("disconnect", () => {
