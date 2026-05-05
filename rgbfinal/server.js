@@ -241,6 +241,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("fallen-beads-update", ({ chainIndex, beads }) => {
+    // console.log(
+    //   "received fallen-beads-update, chainIndex:",
+    //   chainIndex,
+    //   "beads:",
+    //   beads.length,
+    //   "vx[0]:",
+    //   beads[0]?.vx,
+    //   "vy[0]:",
+    //   beads[0]?.vy,
+    // );
     const st = findchainData(chainIndex);
     const firstBead = beads && beads[0];
     if (st) {

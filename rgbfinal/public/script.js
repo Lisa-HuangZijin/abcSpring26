@@ -42,7 +42,7 @@ let rowSpace = 18;
 let chains = [];
 let fallenBeads = []; // 所有掉落的珠子，全局共享//要死了
 let beadsSavedStill = false;
-let stillFrames = 0;
+let stillTimer = null;
 let introVisible = !localStorage.getItem("user-id");
 let pendingBreaks = [];
 
@@ -323,43 +323,47 @@ function draw() {
   if (!beadsSavedStill && fallenBeads.length > 0) {
     let allStill = fallenBeads.every((b) => {
       let sudu = b.velocity.x * b.velocity.x + b.velocity.y * b.velocity.y;
-      return sudu < 0.12; // 我给的判定的阈值
+      return sudu < 0.12;
     });
-    if (allStill) {
-      stillFrames++;
-    } else {
-      stillFrames = 0;
-    }
-    if (stillFrames >= 60) {
-      // 连续60帧（约1秒）都静止才存
-      let groups = {};
-      for (let b of fallenBeads) {
-        if (b.renderData.evicted) continue;
-        let ci = b.renderData.chainIndex;
-        if (ci === undefined) continue;
-        if (!groups[ci]) groups[ci] = [];
-        groups[ci].push(b);
-      }
-      for (let ci in groups) {
-        let beads = groups[ci].map((b) => ({
-          x: b.position.x,
-          yFromBottom: windowHeight - b.position.y,
-          angle: b.angle,
-          vx: 0,
-          vy: 0,
-          row: b.renderData.row,
-          type: b.renderData.type,
-          size: b.renderData.size,
-          rgb: b.renderData.rgb,
-          isPhoto: b.renderData.isPhoto || false,
-          photoURL: b.renderData.photoURL || null,
-        }));
-        if (allStill && hasLocalBreak) {
+    if (allStill && !stillTimer && hasLocalBreak) {
+      stillTimer = setTimeout(function () {
+        if (beadsSavedStill) return;
+        let groups = {};
+        for (let b of fallenBeads) {
+          if (b.renderData.evicted) continue;
+          let ci = b.renderData.chainIndex;
+          if (ci === undefined) continue;
+          if (!groups[ci]) groups[ci] = [];
+          groups[ci].push(b);
+        }
+        for (let ci in groups) {
+          let beads = groups[ci].map((b) => ({
+            x: b.position.x,
+            yFromBottom: windowHeight - b.position.y,
+            angle: b.angle,
+            vx: 0,
+            vy: 0,
+            row: b.renderData.row,
+            type: b.renderData.type,
+            size: b.renderData.size,
+            rgb: b.renderData.rgb,
+            isPhoto: b.renderData.isPhoto || false,
+            photoURL: b.renderData.photoURL || null,
+          }));
+          console.log(
+            "saving still beads chainIndex:",
+            ci,
+            "count:",
+            beads.length,
+          );
           socket.emit("fallen-beads-update", { chainIndex: Number(ci), beads });
         }
-      }
-      beadsSavedStill = true;
-      stillFrames = 0;
+        beadsSavedStill = true;
+        stillTimer = null;
+      }, 2000); // 静止后等2秒存
+    } else if (!allStill && stillTimer) {
+      clearTimeout(stillTimer);
+      stillTimer = null;
     }
   }
 
@@ -730,7 +734,10 @@ function applyChainBreak(chain, startRow, silent) {
     hasLocalBreak = true;
   }
   beadsSavedStill = false;
-  stillFrames = 0;
+  if (stillTimer) {
+    clearTimeout(stillTimer);
+    stillTimer = null;
+  }
   if (chain.brokenRows.has(startRow)) return;
   chain.brokenRows.add(startRow);
 
