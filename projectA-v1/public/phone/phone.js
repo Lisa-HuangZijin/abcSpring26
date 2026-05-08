@@ -59,8 +59,8 @@ function draw() {
 
   //看一下多少字了
   fill(255, 100);
-  textSize(16);
-  text("Count: " + wordCount, 20, 30);
+  //textSize(16);
+  //text("Count: " + wordCount, 20, 30);
 
   push();
   translate(width / 2 - 55, height - 200);
